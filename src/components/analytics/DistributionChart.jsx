@@ -19,7 +19,7 @@ const DistributionChart = ({ habitsData }) => {
       perfect: 0,
       good: 0,
       average: 0,
-      missed: 0,
+      bad: 0,
     };
 
     habitsData.forEach((habit) => {
@@ -34,7 +34,7 @@ const DistributionChart = ({ habitsData }) => {
       { name: "Perfect", value: counts.perfect, color: "var(--habit-perfect)" },
       { name: "Good", value: counts.good, color: "var(--habit-good)" },
       { name: "Average", value: counts.average, color: "var(--habit-average)" },
-      { name: "Missed", value: counts.missed, color: "var(--habit-missed)" },
+      { name: "Bad", value: counts.bad, color: "var(--habit-bad)" },
     ];
   }, [habitsData]);
 

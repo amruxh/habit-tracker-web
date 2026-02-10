@@ -19,7 +19,7 @@
   --habit-perfect: #86efac;
   --habit-good: #fde047;
   --habit-average: #fdba74;
-  --habit-missed: #fca5a5;
+  --habit-bad: #fca5a5;
 
   font-family: 'Inter', system-ui, sans-serif;
   font-synthesis: none;
@@ -38,7 +38,7 @@
   --habit-perfect: #22c55e;   /* Vibrant Green */
   --habit-good: #eab308;      /* Vibrant Yellow/Gold */
   --habit-average: #f97316;   /* Vibrant Orange */
-  --habit-missed: #ef4444;    /* Vibrant Red */
+  --habit-bad: #ef4444;    /* Vibrant Red */
 }
 
 ::-webkit-scrollbar {

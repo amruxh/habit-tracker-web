@@ -3,11 +3,26 @@ import SettingsCard from "../components/SettingsCard";
 import ToggleButton from "../components/ToggleButton";
 import { useTheme } from "../context/ThemeContext";
 import ConfirmBox from "../components/ConfirmBox";
+import { deleteAccount } from "../api/auth";
+import { useNavigate } from "react-router-dom";
+
+/* ... existing imports */
+import { useAuth } from "../context/AuthContext";
 
 const Settings = () => {
   const { setTheme, isDarkMode } = useTheme();
+  const { logout } = useAuth();
   const [toggleState, setToggleState] = useState(false);
   const [open, setOpen] = useState(false);
+
+  const confirmDeleteAccount = async () => {
+    try {
+      await deleteAccount();
+      logout();
+    } catch (error) {
+      console.error("Failed to delete account:", error);
+    }
+  };
 
   return (
     <>
@@ -17,7 +32,9 @@ const Settings = () => {
         message="This action cannot be undone."
         onCancel={() => setOpen(false)}
         onConfirm={() => {
+          confirmDeleteAccount();
           setOpen(false);
+          navigate("/");
         }}
       />
 

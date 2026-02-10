@@ -76,7 +76,7 @@ const Dashboard = () => {
 
       <button
         className="w-full retro-border p-4 mt-6 text-xs font-bold tracking-[0.3em] uppercase transition-all hover:bg-accent-base hover:text-bg-base cursor-pointer"
-        onClick={() => addHabit()}
+        onClick={() => addHabit("NEW HABIT")}
       >
         + ADD NEW HABIT
       </button>

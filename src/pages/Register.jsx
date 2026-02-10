@@ -51,7 +51,12 @@ const Register = () => {
 
     setLoading(true);
     try {
-      const result = await register(formData);
+      const restructuredData = {
+        full_name: formData.full_name,
+        email: formData.email,
+        password: formData.password,
+      };
+      const result = await register(restructuredData);
       if (result.user) {
         navigate("/");
       } else if (result.error) {

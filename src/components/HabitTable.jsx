@@ -251,7 +251,7 @@ const HabitRow = memo(
                   ${log.status === "perfect" ? "bg-(--habit-perfect)" : ""}
                   ${log.status === "good" ? "bg-(--habit-good)" : ""}
                   ${log.status === "average" ? "bg-(--habit-average)" : ""}
-                  ${log.status === "missed" ? "bg-(--habit-missed)" : ""}
+                  ${log.status === "bad" ? "bg-(--habit-bad)" : ""}
               `}
               />
             </td>

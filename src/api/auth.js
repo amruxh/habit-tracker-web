@@ -20,6 +20,12 @@ export const getMe = async () => {
 
 export const getGoogleAuthUrl = async () => {
   return apiClient(
-    `/auth/google?redirect=${window.location.origin}/auth/google`,
+    `/auth/google?redirect=${import.meta.env.VITE_APP_URL || window.location.origin}/auth/google`,
   );
 };
+
+export const deleteAccount = async () => {
+  return apiClient("/auth/account", {
+    method: "DELETE",
+  });
+}
