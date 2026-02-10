@@ -1,15 +1,66 @@
 @import "tailwindcss";
 
+@theme {
+  --color-bg-base: var(--bg-color);
+  --color-text-base: var(--text-color);
+  --color-border-base: var(--border-color);
+  --color-card-base: var(--card-bg);
+  --color-accent-base: var(--accent);
+}
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --bg-color: #fafafa;
+  --text-color: #171717;
+  --border-color: #d4d4d4;
+  --card-bg: #ffffff;
+  --accent: #000000;
+
+  --habit-none: transparent;
+  --habit-perfect: #86efac;
+  --habit-good: #fde047;
+  --habit-average: #fdba74;
+  --habit-missed: #fca5a5;
+
+  font-family: 'Inter', system-ui, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+.dark {
+  --bg-color: #0a0a0a;
+  --text-color: #ededed;
+  --border-color: #262626;
+  --card-bg: #111111;
+  --accent: #ffffff;
+
+  --habit-perfect: #22c55e;   /* Vibrant Green */
+  --habit-good: #eab308;      /* Vibrant Yellow/Gold */
+  --habit-average: #f97316;   /* Vibrant Orange */
+  --habit-missed: #ef4444;    /* Vibrant Red */
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
 body {
-  background-color: rgb(255, 250, 250);
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 #root {
@@ -18,15 +69,40 @@ body {
   overflow: hidden;
 }
 
-/* @keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.retro-border {
+  border: 2px solid var(--border-color);
 }
 
-.rotate {
-  animation: rotate 0.5s ease-in-out forwards;
-} */
+.retro-button {
+  border: 2px solid var(--border-color);
+  padding: 0.5rem 1rem;
+  background-color: var(--card-bg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retro-button:hover {
+  background-color: var(--border-color);
+  color: var(--bg-color);
+}
+
+@media screen and (max-width: 768px) {
+
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    display: none;
+  }
+
+  ::-webkit-scrollbar-track {
+    display: none;
+  }
+
+@keyframes progress {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+}

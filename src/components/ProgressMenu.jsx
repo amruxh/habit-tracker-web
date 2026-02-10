@@ -1,18 +1,24 @@
-const ProgressMenu = ({ progress, selectedProgress, setSelectedProgress }) => {
+import { PROGRESSES, PROGRESS_COLORS } from "../constants";
+
+const ProgressMenu = ({ selectedProgress, setSelectedProgress }) => {
   return (
-    <div className="border rounded p-2 bg-white flex items-center justify-between gap-3">
-      {Object.entries(progress).map(([key, value]) => {
-        const selected = value === selectedProgress;
+    <div className="grid grid-cols-2 xs:grid-cols-3 sm:flex flex-wrap items-center gap-2 sm:gap-4 bg-transparent w-full sm:w-auto">
+      {PROGRESSES.map((progress) => {
+        const selected = progress === selectedProgress;
         return (
           <div
-            className={`flex gap-3 items-center group opacity-50 hover:opacity-100 transition-all duration-300 font-bold cursor-pointer ${selected && "opacity-100"}`}
-            onClick={() => setSelectedProgress(value)}
-            key={key}
+            className={`flex items-center justify-center sm:justify-start gap-2 cursor-pointer transition-all duration-300 border border-transparent rounded-md p-1 sm:p-0 ${selected ? "opacity-100 scale-105 bg-card-base sm:bg-transparent shadow-sm sm:shadow-none" : "opacity-60 hover:opacity-100"}`}
+            onClick={() => setSelectedProgress(progress)}
+            key={progress}
           >
             <div
-              className={`w-5 h-5 rounded-full cursor-pointer m-auto group-hover:border-2 ${value} ${selected ? "border-2" : "border"} `}
-            ></div>
-            <span className="text-xs">{key.toUpperCase()}</span>
+              className={`size-3 sm:size-4 border-2 border-border-base transition-all ${
+                PROGRESS_COLORS[progress]
+              }`}
+            />
+            <span className="text-[10px] sm:text-xs font-bold tracking-widest uppercase">
+              {progress}
+            </span>
           </div>
         );
       })}
