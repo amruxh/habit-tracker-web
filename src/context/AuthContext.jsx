@@ -102,14 +102,9 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const data = await authApi.getGoogleAuthUrl();
-      if (data.url) {
-        window.location.href = data.url;
-      } else {
-        console.error("Failed to get Google login URL", data);
-      }
+      window.location.href = data.url;
     } catch (error) {
       console.error("Google Login error:", error);
-    } finally {
       setLoading(false);
     }
   };

@@ -28,4 +28,4 @@ export const deleteAccount = async () => {
   return apiClient("/auth/account", {
     method: "DELETE",
   });
-}
+};
