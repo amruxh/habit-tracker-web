@@ -1,16 +1,13 @@
-import { ResponsiveContainer, AreaChart, Area, XAxis, Tooltip } from "recharts";
-import { Activity, LayoutDashboard, Zap } from "lucide-react";
-import { useState, useEffect, useMemo } from "react";
+import { LayoutDashboard } from "lucide-react";
+import { useState } from "react";
 import ProgressMenu from "@/components/ProgressMenu";
 import HabitTable from "@/components/HabitTable";
 import TableSkeleton from "@/components/TableSkeleton";
 import { PROGRESSES } from "@/constants";
 import { useHabitsData } from "../context/HabitsDataContext";
-import {
-  getThisDay,
-  getThisYearAndMonth,
-  getTimeDifference,
-} from "../utils/dateHelper";
+import { getThisDay, getThisYearAndMonth } from "../utils/dateHelper";
+import VelocityGraph from "../components/dashboard/VelocityGraph";
+import RecentActivity from "../components/dashboard/RecentActivity";
 
 const Dashboard = () => {
   const {
@@ -47,40 +44,6 @@ const Dashboard = () => {
     updateHabitLog(date, habit.id, newStatus);
     refetchActivities();
   };
-
-  // Calculate velocity graph data from this week's logs
-  const miniGraphData = useMemo(() => {
-    const today = new Date();
-    const dayOfWeek = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - dayOfWeek); // Go back to Sunday
-
-    const weekData = [];
-
-    for (let i = 0; i < 7; i++) {
-      const currentDate = new Date(startOfWeek);
-      currentDate.setDate(startOfWeek.getDate() + i);
-      const dateStr = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, "0")}-${String(currentDate.getDate()).padStart(2, "0")}`;
-
-      // Count all logs for this date where status is not "none"
-      let count = 0;
-      habitsData.forEach((habit) => {
-        const log = habit.logs.find((l) => l.date === dateStr);
-        if (log && log.status !== "none") {
-          count++;
-        }
-      });
-
-      weekData.push({ day: i + 1, val: count });
-    }
-
-    return weekData;
-  }, [habitsData]);
-
-  const activityData = activities.map((activity) => ({
-    time: getTimeDifference(activity.created_at),
-    action: `${activity.habit?.name} marked ${activity.status}`.toUpperCase(),
-  }));
 
   return (
     <div className="p-6 overflow-y-auto h-full bg-bg-base transition-colors duration-300">
@@ -128,59 +91,8 @@ const Dashboard = () => {
 
       {/* Top Section: Mini Graph & Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Simple Progress Graph */}
-        <div className="lg:col-span-2 retro-border bg-card-base p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Zap size={14} className="text-yellow-500" />
-            <h2 className="text-[10px] font-bold tracking-widest uppercase">
-              WEEKLY_VELOCITY
-            </h2>
-          </div>
-          <div className="h-32 w-full">
-            <ResponsiveContainer width="100%" height="100%" minWidth={0}>
-              <AreaChart data={miniGraphData}>
-                <Area
-                  type="monotone"
-                  dataKey="val"
-                  stroke="var(--text-color)"
-                  fill="var(--text-color)"
-                  fillOpacity={0.05}
-                  strokeWidth={2}
-                />
-                <XAxis dataKey="day" hide />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "var(--card-bg)",
-                    border: "1px solid var(--border-color)",
-                    fontSize: "10px",
-                  }}
-                  labelStyle={{ display: "none" }}
-                />
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Recent Activity */}
-        <div className="retro-border bg-card-base p-5">
-          <div className="flex items-center gap-2 mb-4">
-            <Activity size={14} className="text-green-500" />
-            <h2 className="text-[10px] font-bold tracking-widest uppercase">
-              RECENT_LOGS
-            </h2>
-          </div>
-          <div className="space-y-3">
-            {activityData.map((log, i) => (
-              <div
-                key={i}
-                className="flex justify-between items-center text-[10px] border-b border-border-base/50 pb-2 last:border-0 uppercase tracking-tighter"
-              >
-                <span className="font-bold">{log.action}</span>
-                <span className="opacity-50">{log.time}</span>
-              </div>
-            ))}
-          </div>
-        </div>
+        <VelocityGraph habitsData={habitsData} />
+        <RecentActivity activities={activities} />
       </div>
     </div>
   );
