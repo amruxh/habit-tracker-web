@@ -4,12 +4,7 @@ import { useState, useEffect, useMemo, memo } from "react";
 import ConfirmBox from "./ConfirmBox";
 import { useHabitsData } from "../context/HabitsDataContext";
 
-const HabitTable = ({
-  dayColumns,
-  habits,
-  setHabit,
-  yearAndMonth,
-}) => {
+const HabitTable = ({ dayColumns, habits, setHabit, yearAndMonth }) => {
   const thisYearAndMonth = getThisYearAndMonth();
   const thisDay = getThisDay();
   const todayStr = `${thisYearAndMonth}-${String(thisDay).padStart(2, "0")}`;
@@ -189,6 +184,15 @@ const HabitRow = memo(
     saveEditing,
     requestDelete,
   }) => {
+    // Optimization: Create a Map for O(1) log lookup
+    const logsMap = useMemo(() => {
+      const map = new Map();
+      habit.logs.forEach((log) => {
+        map.set(log.date, log);
+      });
+      return map;
+    }, [habit.logs]);
+
     return (
       <tr className="border-b-2 border-border-base last:border-b-0 group">
         {/* Habit Name */}
@@ -231,14 +235,14 @@ const HabitRow = memo(
           const isInCurrentWeek = currentWeekDays.includes(day);
           const dateStr = `${yearAndMonth}-${String(day).padStart(2, "0")}`;
           const isFuture = dateStr > todayStr;
-          const log = habit.logs.find((log) => log.date === dateStr) || {
-            status: "none",
-          };
+
+          // O(1) lookup using Map
+          const log = logsMap.get(dateStr) || { status: "none" };
 
           return (
             <td
               key={day}
-              className={`min-w-6 h-6 md:h-6 lg:h-8 xl:h-10 border-r-2 border-border-base transition-colors 
+              className={`min-w-6 h-6 md:h-6 lg:h-8 xl:h-10 border-r-2 border-border-base transition-colors xl:p-2 
                   ${!isInCurrentWeek ? "hidden md:table-cell" : ""}
                   ${isFuture ? "opacity-20 cursor-not-allowed bg-border-base/5" : "cursor-pointer hover:bg-border-base/5"}
               `}

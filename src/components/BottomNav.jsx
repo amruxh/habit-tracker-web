@@ -7,12 +7,44 @@ import {
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
+import { useQueryClient } from "@tanstack/react-query";
+import { fetchHabits, fetchActivityReport } from "../api/habits";
+
 const BottomNav = () => {
   const location = useLocation();
+  const queryClient = useQueryClient();
+
   const navs = [
-    { name: "Home", link: "/", icon: Home },
-    { name: "Analytics", link: "/analytics", icon: ChartNoAxesCombined },
-    { name: "Achieve.", link: "/achievements", icon: Trophy },
+    {
+      name: "Home",
+      link: "/",
+      icon: Home,
+      prefetch: () =>
+        queryClient.prefetchQuery({
+          queryKey: ["habits"],
+          queryFn: fetchHabits,
+        }),
+    },
+    {
+      name: "Analytics",
+      link: "/analytics",
+      icon: ChartNoAxesCombined,
+      prefetch: () =>
+        queryClient.prefetchQuery({
+          queryKey: ["activity"],
+          queryFn: fetchActivityReport,
+        }),
+    },
+    {
+      name: "Achieve.",
+      link: "/achievements",
+      icon: Trophy,
+      prefetch: () =>
+        queryClient.prefetchQuery({
+          queryKey: ["activity"],
+          queryFn: fetchActivityReport,
+        }),
+    },
     { name: "Profile", link: "/profile", icon: User },
     { name: "Settings", link: "/settings", icon: Settings },
   ];
@@ -25,6 +57,7 @@ const BottomNav = () => {
           <Link
             to={nav.link}
             key={i}
+            onMouseEnter={() => nav.prefetch?.()}
             className={`flex flex-col items-center justify-center w-full h-full transition-colors ${
               isActive
                 ? "text-primary-base"

@@ -29,3 +29,10 @@ export const deleteAccount = async () => {
     method: "DELETE",
   });
 };
+
+export const refreshToken = async (token) => {
+  return apiClient("/auth/refresh", {
+    method: "POST",
+    body: JSON.stringify({ refresh_token: token }),
+  });
+};

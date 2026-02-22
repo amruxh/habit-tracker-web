@@ -10,12 +10,44 @@ import {
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
+import { useQueryClient } from "@tanstack/react-query";
+import { fetchHabits, fetchActivityReport } from "../api/habits";
+
 const SideNav = () => {
   const [expanded, setExpanded] = useState(false);
+  const queryClient = useQueryClient();
+
   const navs = [
-    { name: "DASHBOARD", link: "/", icon: Home },
-    { name: "ANALYTICS", link: "/analytics", icon: ChartNoAxesCombined },
-    { name: "ACHIEVEMENTS", link: "/achievements", icon: Trophy },
+    {
+      name: "DASHBOARD",
+      link: "/",
+      icon: Home,
+      prefetch: () =>
+        queryClient.prefetchQuery({
+          queryKey: ["habits"],
+          queryFn: fetchHabits,
+        }),
+    },
+    {
+      name: "ANALYTICS",
+      link: "/analytics",
+      icon: ChartNoAxesCombined,
+      prefetch: () =>
+        queryClient.prefetchQuery({
+          queryKey: ["activity"],
+          queryFn: fetchActivityReport,
+        }),
+    },
+    {
+      name: "ACHIEVEMENTS",
+      link: "/achievements",
+      icon: Trophy,
+      prefetch: () =>
+        queryClient.prefetchQuery({
+          queryKey: ["activity"],
+          queryFn: fetchActivityReport,
+        }),
+    },
     { name: "PROFILE", link: "/profile", icon: User },
     { name: "SETTINGS", link: "/settings", icon: Settings },
   ];
@@ -35,6 +67,7 @@ const SideNav = () => {
           <Link
             to={nav.link}
             key={i}
+            onMouseEnter={() => nav.prefetch?.()}
             className={`w-full h-12 flex items-center gap-4 hover:bg-border-base/10 transition-colors group ${expanded ? "px-5" : "justify-center"}`}
             title={nav.name}
           >

@@ -1,23 +1,91 @@
 export const API_BASE_URL = import.meta.env.VITE_API_URL;
 
-export const apiClient = async (endpoint, options = {}) => {
-  const token = localStorage.getItem("access_token");
+let isRefreshing = false;
+let refreshSubscribers = [];
 
-  const headers = {
+const subscribeTokenRefresh = (cb) => {
+  refreshSubscribers.push(cb);
+};
+
+const onTokenRefreshed = (token) => {
+  refreshSubscribers.map((cb) => cb(token));
+  refreshSubscribers = [];
+};
+
+export const apiClient = async (endpoint, options = {}) => {
+  const getHeaders = (token) => ({
     "Content-Type": "application/json",
     ...options.headers,
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  });
+
+  const fetchWithAuth = async (token) => {
+    const config = {
+      ...options,
+      headers: getHeaders(token),
+    };
+    return fetch(`${API_BASE_URL}${endpoint}`, config);
   };
 
-  if (token) {
-    headers["Authorization"] = `Bearer ${token}`;
+  let token = localStorage.getItem("access_token");
+  let response = await fetchWithAuth(token);
+
+  if (
+    response.status === 401 &&
+    endpoint !== "/auth/signin" &&
+    endpoint !== "/auth/refresh"
+  ) {
+    if (!isRefreshing) {
+      isRefreshing = true;
+      const refreshToken = localStorage.getItem("refresh_token");
+
+      if (refreshToken) {
+        try {
+          const refreshResponse = await fetch(`${API_BASE_URL}/auth/refresh`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ refresh_token: refreshToken }),
+          });
+
+          if (refreshResponse.ok) {
+            const data = await refreshResponse.json();
+            const newToken = data.session.access_token;
+            localStorage.setItem("access_token", newToken);
+            localStorage.setItem("refresh_token", data.session.refresh_token);
+            onTokenRefreshed(newToken);
+            isRefreshing = false;
+            token = newToken;
+          } else {
+            throw new Error("Refresh failed");
+          }
+        } catch (error) {
+          isRefreshing = false;
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("refresh_token");
+          localStorage.removeItem("user");
+          if (window.location.pathname !== "/login") {
+            window.location.href = "/login";
+          }
+          throw error;
+        }
+      } else {
+        if (window.location.pathname !== "/login") {
+          window.location.href = "/login";
+        }
+        throw new Error("No refresh token");
+      }
+    } else {
+      // Wait for the ongoing refresh
+      token = await new Promise((resolve) => {
+        subscribeTokenRefresh((newToken) => {
+          resolve(newToken);
+        });
+      });
+    }
+
+    // Retry the original request with the new token
+    response = await fetchWithAuth(token);
   }
-
-  const config = {
-    ...options,
-    headers,
-  };
-
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
 
   let data;
   const contentType = response.headers.get("content-type");

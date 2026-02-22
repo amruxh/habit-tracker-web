@@ -8,9 +8,11 @@ import {
 } from "../api/habits";
 
 export const useHabitsQuery = () => {
+  const token = localStorage.getItem("access_token");
   return useQuery({
     queryKey: ["habits"],
     queryFn: fetchHabits,
+    enabled: !!token,
   });
 };
 

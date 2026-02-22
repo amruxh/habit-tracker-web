@@ -40,6 +40,7 @@ export const AuthProvider = ({ children }) => {
       const data = await authApi.signIn(email, password);
       setUser(data.user);
       localStorage.setItem("access_token", data.session.access_token);
+      localStorage.setItem("refresh_token", data.session.refresh_token);
       localStorage.setItem("user", JSON.stringify(data.user));
       return data;
     } catch (error) {
@@ -53,6 +54,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
     localStorage.removeItem("user");
   };
 
@@ -62,6 +64,7 @@ export const AuthProvider = ({ children }) => {
       const data = await authApi.signUp(userData);
       setUser(data.user);
       localStorage.setItem("access_token", data.session.access_token);
+      localStorage.setItem("refresh_token", data.session.refresh_token);
       localStorage.setItem("user", JSON.stringify(data.user));
       return data;
     } catch (error) {
